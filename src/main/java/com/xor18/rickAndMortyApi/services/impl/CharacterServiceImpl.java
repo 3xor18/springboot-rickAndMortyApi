@@ -2,6 +2,7 @@ package com.xor18.rickAndMortyApi.services.impl;
 
 import com.xor18.rickAndMortyApi.dto.responses.character.CharacterOriginResponseDto;
 import com.xor18.rickAndMortyApi.dto.responses.character.CharacterResponseDto;
+import com.xor18.rickAndMortyApi.dto.results.character.OriginCharacterResultDto;
 import com.xor18.rickAndMortyApi.dto.results.character.RickAndMortyCharacterResultDto;
 import com.xor18.rickAndMortyApi.dto.results.origin.OriginResultDto;
 import com.xor18.rickAndMortyApi.exceptions.AppInternalServerErrorException;
@@ -32,16 +33,38 @@ public class CharacterServiceImpl implements CharacterService {
 
     @Override
     public ResponseEntity<CharacterResponseDto> findById(Long idCharacter) throws AppInternalServerErrorException {
+        //Obtenemos la data del character
         RickAndMortyCharacterResultDto characterInfo = fetchApi(idCharacter);
-        String originUrl=characterInfo.getOrigin().getUrl();
-        OriginResultDto locationInfo= originService.findOriginByUrl(originUrl);
-        CharacterResponseDto dto=makeDtoForResponse(characterInfo,locationInfo);
-
+        //Extraemos la url del origin para hacer una consulta del mismo
+        String originUrl = getUrlOrigin(characterInfo.getOrigin());
+        //consulta al origin
+        OriginResultDto locationInfo = originService.findOriginByUrl(originUrl);
+        //parseamos al DTO de Response
+        CharacterResponseDto dto = makeDtoForResponse(characterInfo, locationInfo);
+        //Retornamos el DTO
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
-    private CharacterResponseDto makeDtoForResponse(RickAndMortyCharacterResultDto characterInfo, OriginResultDto locationInfo){
-        CharacterResponseDto characterInfoDto=new CharacterResponseDto();
+    /**
+     * controla que siempre exista un string en la url
+     * @param origin
+     * @return
+     */
+    private String getUrlOrigin(OriginCharacterResultDto origin) {
+        if (origin == null) {
+            return "";
+        }
+        return origin.getUrl();
+    }
+
+    /**
+     * Parsea del objeto de Character retornado por el api de rickANdMorty al Dto que se retornara
+     *
+     * @param locationInfo
+     * @return Dto que se embee en el response
+     */
+    private CharacterResponseDto makeDtoForResponse(RickAndMortyCharacterResultDto characterInfo, OriginResultDto locationInfo) {
+        CharacterResponseDto characterInfoDto = new CharacterResponseDto();
         characterInfoDto.setId(characterInfo.getId());
         characterInfoDto.setName(characterInfo.getName());
         characterInfoDto.setStatus(characterInfo.getStatus());
@@ -49,11 +72,17 @@ public class CharacterServiceImpl implements CharacterService {
         characterInfoDto.setType(characterInfo.getType());
         characterInfoDto.setEpisode_count(characterInfo.getEpisode().size());
         characterInfoDto.setOrigin(makeDtoOrigin(locationInfo));
-        return  characterInfoDto;
+        return characterInfoDto;
     }
 
-    private CharacterOriginResponseDto makeDtoOrigin(OriginResultDto locationInfo){
-        CharacterOriginResponseDto dto=new CharacterOriginResponseDto();
+    /**
+     * Parsea del objeto de Origin retornado por el api de rickANdMorty al Dto que se retornara
+     *
+     * @param locationInfo
+     * @return Dto que se embee en el response
+     */
+    private CharacterOriginResponseDto makeDtoOrigin(OriginResultDto locationInfo) {
+        CharacterOriginResponseDto dto = new CharacterOriginResponseDto();
         dto.setName(locationInfo.getName());
         dto.setUrl(locationInfo.getUrl());
         dto.setDimension(locationInfo.getDimension());
@@ -63,11 +92,12 @@ public class CharacterServiceImpl implements CharacterService {
 
     /**
      * Metodo para hacerle la fetch al api y obtener al info del character
-     * @param idCharacter  (Long) id del caracter a buscar
+     *
+     * @param idCharacter (Long) id del caracter a buscar
      * @return RickAndMortyCharacterResultDto  esto contiene la Data del Character
      * @throws AppInternalServerErrorException
      */
-    private RickAndMortyCharacterResultDto fetchApi(Long idCharacter) throws AppInternalServerErrorException {
+    protected RickAndMortyCharacterResultDto fetchApi(Long idCharacter) throws AppInternalServerErrorException {
         try {
             return restTemplate.getForObject(urlApiFindCharacterById + idCharacter, RickAndMortyCharacterResultDto.class);
         } catch (Error e) {

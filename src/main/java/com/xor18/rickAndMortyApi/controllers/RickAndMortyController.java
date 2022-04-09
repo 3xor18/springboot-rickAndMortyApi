@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/v1/character")
 public class RickAndMortyController {
 
-    private CharacterService characterService;
+    private final  CharacterService characterService;
 
     public RickAndMortyController(CharacterService characterService) {
         this.characterService = characterService;

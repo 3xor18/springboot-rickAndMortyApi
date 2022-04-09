@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xor18.rickAndMortyApi.dto.responses.character.CharacterResponseDto;
 import com.xor18.rickAndMortyApi.services.CharacterService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -39,23 +40,27 @@ class RickAndMortyControllerTest {
     }
 
     @Test
+    @DisplayName("Si no le pasan un id en la url")
     void idNoSuministrado() throws Exception {
         mvc.perform(get(url)).andExpect(status().is5xxServerError()).andExpect(jsonPath("$.errorMessage").value("No puedes consultar todos los caracteres al mismo tiempo"));
     }
 
     @Test
+    @DisplayName("Si no encontro el id en el api")
     void idNoEncontrado() throws Exception {
         when(characterService.findById(any())).thenThrow(HttpClientErrorException.class);
         mvc.perform(get(url + '0')).andExpect(status().is4xxClientError()).andExpect(jsonPath("$.errorMessage").value("Este character no existe"));
     }
 
     @Test
+    @DisplayName("Si le pasan un id no numerico como un alfabetico")
     void idNoNumerico() throws Exception {
         when(characterService.findById(any())).thenThrow(MethodArgumentTypeMismatchException.class);
         mvc.perform(get(url + 'a')).andExpect(status().is4xxClientError()).andExpect(jsonPath("$.errorMessage").value("el id debe ser un número entero"));
     }
 
     @Test
+    @DisplayName("Todo OK")
     void idOk() throws Exception {
         Long idMock=1L;
         String nameMock="aaa";
