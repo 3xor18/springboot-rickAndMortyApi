@@ -2,6 +2,7 @@ package com.xor18.rickAndMortyApi.controllers;
 
 import com.xor18.rickAndMortyApi.dto.responses.character.CharacterResponseDto;
 import com.xor18.rickAndMortyApi.exceptions.AppInternalServerErrorException;
+import com.xor18.rickAndMortyApi.exceptions.handler.ExceptionResponse;
 import com.xor18.rickAndMortyApi.services.CharacterService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
@@ -21,7 +22,7 @@ public class RickAndMortyController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public Object getAll() throws AppInternalServerErrorException {
+    public ResponseEntity<ExceptionResponse> getAll() throws AppInternalServerErrorException {
         log.info("[GET][getAll] - request to get all Characters");
         throw new AppInternalServerErrorException("No puedes consultar todos los caracteres al mismo tiempo");
     }
