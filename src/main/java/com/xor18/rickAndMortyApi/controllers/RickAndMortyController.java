@@ -4,6 +4,9 @@ import com.xor18.rickAndMortyApi.dto.responses.character.CharacterResponseDto;
 import com.xor18.rickAndMortyApi.exceptions.AppInternalServerErrorException;
 import com.xor18.rickAndMortyApi.exceptions.handler.ExceptionResponse;
 import com.xor18.rickAndMortyApi.services.CharacterService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +24,10 @@ public class RickAndMortyController {
         this.characterService = characterService;
     }
 
+    @ApiOperation(value = "Metodo para obtener todos los caracteres", response = boolean.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 500, message = "retorna error", response = ExceptionResponse.class)
+    })
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ExceptionResponse> getAll() throws AppInternalServerErrorException {
         log.info("[GET][getAll] - request to get all Characters");
