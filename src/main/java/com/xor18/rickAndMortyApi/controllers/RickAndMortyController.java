@@ -26,7 +26,7 @@ public class RickAndMortyController {
 
     @ApiOperation(value = "Metodo para obtener todos los caracteres", response = boolean.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 500, message = "retorna error", response = ExceptionResponse.class)
+            @ApiResponse(code = 500, message = "No puedes consultar todos los caracteres al mismo tiempo", response = ExceptionResponse.class)
     })
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ExceptionResponse> getAll() throws AppInternalServerErrorException {
@@ -34,6 +34,8 @@ public class RickAndMortyController {
         throw new AppInternalServerErrorException("No puedes consultar todos los caracteres al mismo tiempo");
     }
 
+
+    @ApiOperation(value = "Metodo para obtener un caracter por ID", response = CharacterResponseDto.class)
     @GetMapping(value = "{idCharacter}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CharacterResponseDto> getById(@PathVariable("idCharacter") Long idCharacter) throws AppInternalServerErrorException {
         log.info("[GET][getById] - request to find a Character with id " + idCharacter);
