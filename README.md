@@ -51,3 +51,4 @@ _Parámetros a enviar en el la url_
 # Swagger
 El proyecto esta andando en el puesto 8080 por ende la ruta es
 ```http://localhost:8080/swagger-ui.html#```
+##Gerson Aponte
